@@ -12,6 +12,14 @@
     {{ form.department(size=32) }}
     <label>Рейтинг</label>
     {{ form.rating(step="any") }}
+    <label>Задачи</label>
+    {{ form.tasks() }}
+    <label>Скорость</label>
+    {{ form.speed() }}
+    <label>Точность</label>
+    {{ form.correctness() }}
+    <label>Итоговый балл</label>
+    {{ form.score() }}
     {{ form.submit(class="btn") }}
   </form>
   <a href="{{ url_for('auth.list_employees') }}" class="btn">Назад</a>

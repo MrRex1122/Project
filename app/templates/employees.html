@@ -4,7 +4,7 @@
 
 {% block content %}
   <h1>Сотрудники</h1>
-  <form method="post">
+    <form method="post">
     {{ form.hidden_tag() }}
     <label>Имя</label>
     {{ form.name(size=32) }}
@@ -14,35 +14,50 @@
     {{ form.department(size=32) }}
     <label>Рейтинг</label>
     {{ form.rating(step="any") }}
+    <label>Задачи</label>
+    {{ form.tasks() }}
+    <label>Скорость</label>
+    {{ form.speed() }}
+    <label>Точность</label>
+    {{ form.correctness() }}
+    <label>Итоговый балл</label>
+    {{ form.score() }}
     {{ form.submit(class="btn") }}
     </form>
-<!-- ...таблица сотрудников... -->
-    <table>
+  <table>
     <thead>
-        <tr>
+      <tr>
         <th>Имя</th>
         <th>Должность</th>
         <th>Отдел</th>
         <th>Рейтинг</th>
+        <th>Задачи</th>
+        <th>Скорость</th>
+        <th>Точность</th>
+        <th>Итоговый балл</th>
         <th>Действия</th>
-        </tr>
+      </tr>
     </thead>
     <tbody>
-        {% for emp in employees %}
-        <tr>
+      {% for emp in employees %}
+      <tr>
         <td>{{ emp.name }}</td>
         <td>{{ emp.position }}</td>
         <td>{{ emp.department }}</td>
         <td>{{ emp.rating }}</td>
+        <td>{{ emp.tasks }}</td>
+        <td>{{ emp.speed }}</td>
+        <td>{{ emp.correctness }}</td>
+        <td>{{ emp.score }}</td>
         <td>
-            <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
+          <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
             {{ form.csrf_token }}
             <button type="submit" class="btn" style="background:#d9534f;">Удалить</button>
-            </form>
-            <a href="{{ url_for('auth.edit_employee', emp_id=emp.id) }}" class="btn" style="background:#f0ad4e;">Редактировать</a>
+          </form>
+          <a href="{{ url_for('auth.edit_employee', emp_id=emp.id) }}" class="btn" style="background:#f0ad4e;">Редактировать</a>
         </td>
-        </tr>
-        {% endfor %}
+      </tr>
+      {% endfor %}
     </tbody>
-    </table>
+  </table>
 {% endblock %}

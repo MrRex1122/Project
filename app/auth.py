@@ -42,7 +42,10 @@ def list_employees():
             position=form.position.data,
             department=form.department.data,
             rating=form.rating.data,
-            tasks=0, speed=0, correctness=0, score=0
+            tasks=form.tasks.data,
+            speed=form.speed.data,
+            correctness=form.correctness.data,
+            score=form.score.data
         )
         db.session.add(employee)
         db.session.commit()
@@ -78,6 +81,10 @@ def edit_employee(emp_id):
         emp.position = form.position.data
         emp.department = form.department.data
         emp.rating = form.rating.data
+        emp.tasks = form.tasks.data
+        emp.speed = form.speed.data
+        emp.correctness = form.correctness.data
+        emp.score = form.score.data
         db.session.commit()
         flash(f"Данные сотрудника {emp.name} обновлены.", 'info')
         return redirect(url_for('auth.list_employees'))
