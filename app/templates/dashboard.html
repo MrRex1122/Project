@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Обзор – Система оценки эффективности{% endblock %}
+
+{% block content %}
+  <h1>Обзор</h1>
+  <!-- Холст для графика Chart.js -->
+  <canvas id="performanceChart" width="600" height="300"></canvas>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var ctx = document.getElementById('performanceChart').getContext('2d');
+  var performanceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
+      datasets: [{
+        label: 'Выполненные задачи',
+        data: [12, 19, 8, 15, 10, 7],
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Количество задач'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Месяц'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: true
+        }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

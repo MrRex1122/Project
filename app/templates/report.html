@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчёты – Система оценки эффективности{% endblock %}
+
+{% block content %}
+  <h1>Отчёты</h1>
+  <!-- Форма загрузки данных для отчёта -->
+  <form action="{{ url_for('auth.upload') }}" method="post" enctype="multipart/form-data">
+    <label for="datafile">Загрузить данные (Excel/CSV):</label>
+    <input type="file" id="datafile" name="datafile" accept=".csv, .xlsx, .xls">
+    <button type="submit" class="btn">Загрузить</button>
+  </form>
+  <!-- Кнопки экспорта отчёта -->
+  <a href="{{ url_for('export_pdf') }}" class="btn">Экспорт в PDF</a>
+  <a href="{{ url_for('export_excel') }}" class="btn">Экспорт в Excel</a>
+{% endblock %}

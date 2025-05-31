@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход – Система оценки эффективности{% endblock %}
+
+{% block content %}
+  <h1>Вход</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <label for="username">Имя пользователя</label>
+    {{ form.username(size=32) }}
+    <label for="password">Пароль</label>
+    {{ form.password(size=32) }}
+    {{ form.submit(class="btn") }}
+  </form>
+{% endblock %}

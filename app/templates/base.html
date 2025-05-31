@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Система оценки эффективности{% endblock %}</title>
+  <!-- Подключение CSS DataTables (для таблицы) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+  <!-- Минимальные встроенные стили для оформления -->
+  <style>
+    nav { background: #f0f0f0; padding: 10px; }
+    nav a { margin-right: 15px; text-decoration: none; color: #333; }
+    nav a:hover { text-decoration: underline; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #eee; }
+    form { margin: 15px 0; }
+    label { display: block; margin-top: 5px; }
+    input, select { margin-bottom: 10px; }
+    .btn { display: inline-block; padding: 6px 12px; margin-top: 10px; margin-right: 5px; background: #4CAF50; color: #fff; text-decoration: none; border: none; cursor: pointer; }
+    .btn:hover { background: #45A049; }
+  </style>
+</head>
+<body>
+  <!-- Навигационное меню -->
+  <nav>
+    <a href="{{ url_for('views.dashboard') }}">Обзор</a>
+    <a href="{{ url_for('auth.list_users') }}">Сотрудники</a>
+    <a href="{{ url_for('views.upload_data') }}">Отчёты</a>
+    <a href="{{ url_for('auth.logout') }}" style="float:right;">Выход</a>
+  </nav>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+  <!-- Подключение необходимых скриптов -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
