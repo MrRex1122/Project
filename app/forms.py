@@ -7,10 +7,10 @@ class LoginForm(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     submit = SubmitField('Войти')
 
-class AddUserForm(FlaskForm):
-    username = StringField('Имя пользователя', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    role = StringField('Должность', default='user')
+
+class AddEmployeeForm(FlaskForm):
+    name = StringField('Имя', validators=[DataRequired()])
+    position = StringField('Должность', validators=[DataRequired()])
     department = StringField('Отдел')
     rating = FloatField('Рейтинг')
     submit = SubmitField('Добавить')

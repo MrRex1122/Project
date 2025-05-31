@@ -19,23 +19,7 @@ def dashboard():
     employees = current_employees
     return render_template('dashboard.html', employees=employees)
 # Загрузка нового CSV-файла с данными сотрудников
-@bp.route('/employees/add', methods=['POST'])
-@login_required
-def add_employee():
-    if current_user.role != 'admin':
-        return "Forbidden", 403
-    name = request.form.get('name')
-    email = request.form.get('email')
-    role = request.form.get('role')
-    if not name or not role:
-        flash("Имя и должность обязательны.", 'error')
-        return redirect(url_for('auth.list_users'))
-    from app.models import Employee
-    new_employee = Employee(name=name, tasks=0, speed=0, correctness=0, score=0)
-    db.session.add(new_employee)
-    db.session.commit()
-    flash(f"Сотрудник {name} добавлен.", 'info')
-    return redirect(url_for('auth.list_users'))
+
 @bp.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_data():
