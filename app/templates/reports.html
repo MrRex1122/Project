@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Отчёты{% endblock %}
+{% block content %}
+  <h1>Отчёты по сотрудникам</h1>
+  <canvas id="scoreChart" width="600" height="300"></canvas>
+  <canvas id="departmentChart" width="600" height="300"></canvas>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Данные для графика "Итоговый балл по сотрудникам"
+  const names = {{ employees|map(attribute='name')|list|tojson }};
+  const scores = {{ employees|map(attribute='score')|list|tojson }};
+  const departments = {{ employees|map(attribute='department')|list|tojson }};
+
+  // График итоговых баллов
+  new Chart(document.getElementById('scoreChart'), {
+    type: 'bar',
+    data: {
+      labels: names,
+      datasets: [{
+        label: 'Итоговый балл',
+        data: scores,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { x: { title: { display: true, text: 'Сотрудник' } },
+                y: { title: { display: true, text: 'Баллы' }, beginAtZero: true } }
+    }
+  });
+
+  // График средних баллов по отделам
+  const deptScores = {};
+  departments.forEach((dept, i) => {
+    if (!deptScores[dept]) deptScores[dept] = [];
+    deptScores[dept].push(scores[i]);
+  });
+  const deptLabels = Object.keys(deptScores);
+  const deptAverages = deptLabels.map(d => {
+    const arr = deptScores[d];
+    return arr.reduce((a, b) => a + b, 0) / arr.length;
+  });
+
+  new Chart(document.getElementById('departmentChart'), {
+    type: 'bar',
+    data: {
+      labels: deptLabels,
+      datasets: [{
+        label: 'Средний итоговый балл по отделу',
+        data: deptAverages,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { x: { title: { display: true, text: 'Отдел' } },
+                y: { title: { display: true, text: 'Средний балл' }, beginAtZero: true } }
+    }
+  });
+</script>
+{% endblock %}

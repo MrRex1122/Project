@@ -20,6 +20,15 @@ def dashboard():
     return render_template('dashboard.html', employees=employees)
 # Загрузка нового CSV-файла с данными сотрудников
 
+
+
+@bp.route('/reports')
+@login_required
+def reports():
+    employees = Employee.query.all()
+    # Можно сгруппировать по отделам, должностям и т.д.
+    return render_template('reports.html', employees=employees)
+
 @bp.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_data():
