@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Редактировать сотрудника{% endblock %}
+{% block content %}
+  <h2>Редактировать сотрудника</h2>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <label>Имя</label>
+    {{ form.name(size=32) }}
+    <label>Должность</label>
+    {{ form.position(size=32) }}
+    <label>Отдел</label>
+    {{ form.department(size=32) }}
+    <label>Рейтинг</label>
+    {{ form.rating(step="any") }}
+    {{ form.submit(class="btn") }}
+  </form>
+  <a href="{{ url_for('auth.list_employees') }}" class="btn">Назад</a>
+{% endblock %}

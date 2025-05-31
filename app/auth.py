@@ -51,3 +51,34 @@ def list_employees():
 
     employees = Employee.query.all()
     return render_template('employees.html', employees=employees, form=form)
+
+
+@bp.route('/employees/delete/<int:emp_id>', methods=['POST'])
+@login_required
+def delete_employee(emp_id):
+    if current_user.role != 'admin':
+        flash("Доступ запрещен.", 'error')
+        return redirect(url_for('auth.list_employees'))
+    emp = Employee.query.get_or_404(emp_id)
+    db.session.delete(emp)
+    db.session.commit()
+    flash(f"Сотрудник {emp.name} удалён.", 'info')
+    return redirect(url_for('auth.list_employees'))
+
+@bp.route('/employees/edit/<int:emp_id>', methods=['GET', 'POST'])
+@login_required
+def edit_employee(emp_id):
+    if current_user.role != 'admin':
+        flash("Доступ запрещен.", 'error')
+        return redirect(url_for('auth.list_employees'))
+    emp = Employee.query.get_or_404(emp_id)
+    form = AddEmployeeForm(obj=emp)
+    if form.validate_on_submit():
+        emp.name = form.name.data
+        emp.position = form.position.data
+        emp.department = form.department.data
+        emp.rating = form.rating.data
+        db.session.commit()
+        flash(f"Данные сотрудника {emp.name} обновлены.", 'info')
+        return redirect(url_for('auth.list_employees'))
+    return render_template('edit_employee.html', form=form, emp=emp)
