@@ -9,6 +9,7 @@
       <input type="file" name="file" accept=".csv" required>
       <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
   </form>
+  <a href="{{ url_for('views.export_csv') }}" class="btn">Экспорт в CSV</a>
     <form method="post">
     {{ form.hidden_tag() }}
     <label>Имя</label>

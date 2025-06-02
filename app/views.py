@@ -6,6 +6,7 @@ import pandas as pd
 from app import db
 from app.models import Employee, Task
 bp = Blueprint('views', __name__)
+from flask import Response
 # Глобальная переменная для хранения текущих данных сотрудников
 current_employees = [] # список объектов Employee или словарей с данными
 # Вспомогательная функция для проверки расширения файла
@@ -26,11 +27,29 @@ def dashboard():
 @login_required
 def reports():
     employees = Employee.query.all()
-    names = [e.name for e in employees]
-    departments = [e.department for e in employees]
-    scores = [e.score() or 0 for e in employees]  # если score() вернет None
-    return render_template('reports.html', names=names, departments=departments, scores=scores)
+    # Собираем пары (имя, балл)
+    data = [(e.name, e.score() or 0) for e in employees]
+    # Сортируем по баллу по убыванию
+    data.sort(key=lambda x: x[1], reverse=True)
+    names = [x[0] for x in data]
+    scores = [x[1] for x in data]
+    return render_template('reports.html', names=names, scores=scores)
 
+@bp.route('/export_csv')
+@login_required
+def export_csv():
+    employees = Employee.query.all()
+    data = sorted([(e.name, e.score() or 0) for e in employees], key=lambda x: x[1], reverse=True)
+    lines = ["name,score"]
+    for name, score in data:
+        lines.append(f"{name},{score}")
+    # Добавляем BOM для корректного открытия в Excel
+    csv_content = "\ufeff" + "\n".join(lines)
+    return Response(
+        csv_content,
+        mimetype="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment;filename=employee_scores.csv"}
+    )
 
 
 
