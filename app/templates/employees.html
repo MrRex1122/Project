@@ -4,6 +4,11 @@
 
 {% block content %}
   <h1>Сотрудники</h1>
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('views.upload_data') }}">
+      {{ form.csrf_token }}
+      <input type="file" name="file" accept=".csv" required>
+      <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
+  </form>
     <form method="post">
     {{ form.hidden_tag() }}
     <label>Имя</label>
@@ -14,27 +19,16 @@
     {{ form.department(size=32) }}
     <label>Рейтинг</label>
     {{ form.rating(step="any") }}
-    <label>Задачи</label>
-    {{ form.tasks() }}
-    <label>Скорость</label>
-    {{ form.speed() }}
-    <label>Точность</label>
-    {{ form.correctness() }}
-    <label>Итоговый балл</label>
-    {{ form.score() }}
     {{ form.submit(class="btn") }}
-    </form>
+  </form>
   <table>
     <thead>
       <tr>
         <th>Имя</th>
-        <th>Должность</th>
-        <th>Отдел</th>
-        <th>Рейтинг</th>
-        <th>Задачи</th>
-        <th>Скорость</th>
-        <th>Точность</th>
-        <th>Итоговый балл</th>
+        <th>Кол-во задач</th>
+        <th>Ср. время</th>
+        <th>Ср. % выполнения</th>
+        <th>Итоговый рейтинг</th>
         <th>Действия</th>
       </tr>
     </thead>
@@ -42,13 +36,10 @@
       {% for emp in employees %}
       <tr>
         <td>{{ emp.name }}</td>
-        <td>{{ emp.position }}</td>
-        <td>{{ emp.department }}</td>
-        <td>{{ emp.rating }}</td>
-        <td>{{ emp.tasks }}</td>
-        <td>{{ emp.speed }}</td>
-        <td>{{ emp.correctness }}</td>
-        <td>{{ emp.score }}</td>
+        <td>{{ emp.tasks_count() }}</td>
+        <td>{{ emp.avg_time()|round(2) }}</td>
+        <td>{{ emp.avg_correctness()|round(2) }}</td>
+        <td>{{ emp.score() }}</td>
         <td>
           <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
             {{ form.csrf_token }}

@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 from app import db
-from app.models import Employee
+from app.models import Employee, Task
 bp = Blueprint('views', __name__)
 # Глобальная переменная для хранения текущих данных сотрудников
 current_employees = [] # список объектов Employee или словарей с данными
@@ -26,70 +26,46 @@ def dashboard():
 @login_required
 def reports():
     employees = Employee.query.all()
-    # Можно сгруппировать по отделам, должностям и т.д.
-    return render_template('reports.html', employees=employees)
+    names = [e.name for e in employees]
+    departments = [e.department for e in employees]
+    scores = [e.score() or 0 for e in employees]  # если score() вернет None
+    return render_template('reports.html', names=names, departments=departments, scores=scores)
 
-@bp.route('/upload', methods=['GET', 'POST'])
+
+
+
+@bp.route('/upload', methods=['POST'])
 @login_required
 def upload_data():
-    if request.method == 'POST':
-        # Только администратор может загружать новые данные
-        if current_user.role != 'admin':
-            flash("У вас нет прав для загрузки данных.", 'error')
-            return redirect(url_for('views.dashboard'))
-            file = request.files.get('file')
-        if not file or file.filename == '':
-            flash("Файл не выбран.", 'error')
-            return redirect(url_for('views.upload_data'))
-        if allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(os.getcwd(), 'data', filename)
-            file.save(filepath)
-            flash(f"Файл {filename} загружен. Выполняется расчет эффективности...", 'info')
-            # Чтение CSV и расчет показателей
-            data = pd.read_csv(filepath)
-            # Предполагаем, что CSV содержит колонки: Name, Tasks, Speed, Correctness
-            if 'Name' in data.columns:
-                data.rename(columns={'Name': 'name', 'Tasks': 'tasks','Speed': 'speed', 'Correctness':'correctness'}, inplace=True)
-            # Приводим числовые столбцы к float
-            data['tasks'] = data['tasks'].astype(float)
-            data['speed'] = data['speed'].astype(float)
-            data['correctness'] = data['correctness'].astype(float)
-            # Нормировка и расчет интегрального показателя
-            weights_input = request.form.get('weights') # строка типа 
-            "w1,w2,w3"
-            if weights_input:
-                w = [float(x) for x in weights_input.split(',')]
-            else:
-                w = [1.0, 1.0, 1.0]
-            # Промежуточные оценки по критериям (0-100 баллов каждый)
-            max_tasks = data['tasks'].max()
-            max_speed = data['speed'].max()
-            max_correct = data['correctness'].max() if data['correctness'].max() <= 100 else 100.0
-            # Если "speed" = время выполнения задачи (меньше лучше), то можно использовать инверсию:
-            # min_speed = data['speed'].min(); data['speed_score'] = min_speed / data['speed'] * 100
-            data['tasks_score'] = data['tasks'] / max_tasks * 100 if max_tasks > 0 else 0
-            data['speed_score'] = data['speed'] / max_speed * 100 if max_speed > 0 else 0
-            data['correctness_score'] = data['correctness'] if max_correct == 100.0 else data['correctness'] / max_correct * 100
-            # Итоговый рейтинг как взвешенная сумма (нормируем на сумму весов)
-            total_weight = sum(w) if sum(w) != 0 else 1.0
-            data['score'] = (data['tasks_score'] * w[0] +
-            data['speed_score'] * w[1] +
-            data['correctness_score'] * w[2]) / total_weight
-            # Сохраняем текущие данные в глобальный список
-            global current_employees
-            current_employees = []
-            for _, row in data.iterrows():
-                emp = Employee(name=row['name'], tasks=row['tasks'], speed=row['speed'], correctness=row['correctness'], score=row['score'])
-            current_employees.append(emp)
-            # (Опционально: обновить данные в базе, если используется модель Employee)
-            Employee.query.delete()
-            for emp in current_employees:
-                db.session.add(emp)
-            db.session.commit()
-            flash("Расчет эффективности выполнен успешно.", 'success')
-            return redirect(url_for('views.dashboard'))
+    if current_user.role != 'admin':
+        flash("У вас нет прав для загрузки данных.", 'error')
+        return redirect(url_for('views.dashboard'))
+    file = request.files.get('file')
+    if not file or file.filename == '':
+        flash("Файл не выбран.", 'error')
+        return redirect(url_for('auth.list_employees'))
+    if allowed_file(file.filename):
+        import pandas as pd
+        df = pd.read_csv(file)
+        if list(df.columns) == ['name', 'task_time', 'completion']:
+            df.columns = ['name', 'time', 'correctness']
+        elif list(df.columns) == ['name', 'time', 'correctness']:
+            pass
+        else:
+            df = pd.read_csv(file, header=None, names=['name', 'time', 'correctness'])
+        Task.query.delete()
+        Employee.query.delete()
+        db.session.commit()
+        for name, group in df.groupby('name'):
+            emp = Employee(name=name)
+            db.session.add(emp)
+            db.session.flush()
+            for _, row in group.iterrows():
+                task = Task(employee_id=emp.id, time=row['time'], correctness=row['correctness'])
+                db.session.add(task)
+        db.session.commit()
+        flash("Данные успешно загружены и обработаны.", 'success')
+        return redirect(url_for('auth.list_employees'))
     else:
         flash("Недопустимый формат файла. Загрузите CSV.", 'error')
-    # GET-запрос - форма загрузки (для администратора)
-    return render_template('upload.html')
+        return redirect(url_for('auth.list_employees'))
