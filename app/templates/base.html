@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Система оценки эффективности{% endblock %}</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6fa; margin: 0; }
+    header { background: #1976d2; color: #fff; padding: 20px; }
+    nav { background: #1565c0; padding: 10px; }
+    nav a { color: #fff; margin-right: 20px; text-decoration: none; }
+    .container { max-width: 1200px; margin: 30px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #eee; padding: 30px; }
+    .btn { background: #1976d2; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; }
+    .btn:hover { background: #1565c0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border-bottom: 1px solid #eee; }
+    th { background: #f9f9f9; }
+    .flash-error { color: #d32f2f; }
+    .flash-success { color: #388e3c; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header>
+    <h1>Система оценки эффективности</h1>
+  </header>
+  <nav>
+    <a href="{{ url_for('views.dashboard') }}">Обзор</a>
+    <a href="{{ url_for('auth.list_employees') }}">Сотрудники</a>
+    <a href="{{ url_for('views.reports') }}">Отчёты</a>
+    <a href="{{ url_for('auth.logout') }}">Выйти</a>
+  </nav>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

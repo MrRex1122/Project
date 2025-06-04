@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Сотрудники{% endblock %}
+
+{% block content %}
+  <h1>Сотрудники</h1>
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('views.upload_data') }}">
+      <input type="file" name="file" accept=".csv" required>
+      <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
+  </form>
+  <a href="{{ url_for('views.export_csv') }}" class="btn">Экспорт в CSV</a>
+  <table>
+    <thead>
+      <tr>
+        <th>Имя</th>
+        <th>Кол-во задач</th>
+        <th>Ср. время</th>
+        <th>Ср. % выполнения</th>
+        <th>Итоговый рейтинг</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for emp in employees %}
+      <tr>
+        <td>{{ emp.name }}</td>
+        <td>{{ emp.tasks_count() }}</td>
+        <td>{{ emp.avg_time()|round(2) }}</td>
+        <td>{{ emp.avg_correctness()|round(2) }}</td>
+        <td>{{ emp.score() }}</td>
+        <td>
+          <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
+            <button type="submit" class="btn" style="background:#d9534f;">Удалить</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
