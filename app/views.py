@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 from app import db
-from app.models import Employee
+from app.models import Employee, Task
 bp = Blueprint('views', __name__)
 # Глобальная переменная для хранения текущих данных сотрудников
 current_employees = [] # список объектов Employee или словарей с данными
@@ -54,20 +54,23 @@ def reports():
 def export_csv():
     employees = Employee.query.all()
     import csv
-    from io import StringIO
+    from io import StringIO, BytesIO
+
     si = StringIO()
     cw = csv.writer(si)
-    cw.writerow(['ID', 'Имя', 'Отдел'])
+    cw.writerow(['ID', 'Имя', 'Итоговый рейтинг'])
     for e in employees:
-        cw.writerow([e.id, e.name, getattr(e, 'department', '')])
-    output = si.getvalue()
+        cw.writerow([e.id, e.name, e.score()])
+    # Добавляем BOM для корректного открытия в Excel
+    output = '\ufeff' + si.getvalue()
+    bio = BytesIO(output.encode('utf-8'))
+    bio.seek(0)
     return send_file(
-        StringIO(output),
+        bio,
         mimetype='text/csv',
         as_attachment=True,
         download_name='employees.csv'
     )
-
 
 @bp.route('/upload', methods=['GET', 'POST'])
 @login_required
