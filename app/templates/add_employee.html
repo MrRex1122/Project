@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Добавить сотрудника{% endblock %}
+{% block content %}
+  <h1>Добавить сотрудника</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <div>{{ form.name.label }} {{ form.name() }}</div>
+    <div>{{ form.position.label }} {{ form.position() }}</div>
+    <div>{{ form.department.label }} {{ form.department() }}</div>
+    <div>{{ form.rating.label }} {{ form.rating() }}</div>
+    {{ form.submit(class="btn") }}
+  </form>
+{% endblock %}

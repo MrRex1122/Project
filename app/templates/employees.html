@@ -4,12 +4,15 @@
 
 {% block content %}
   <h1>Сотрудники</h1>
-  <form method="post" enctype="multipart/form-data" action="{{ url_for('views.upload_data') }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="file" name="file" accept=".csv" required>
-      <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
-  </form>
-  <a href="{{ url_for('views.export_csv') }}" class="btn">Экспорт в CSV</a>
+  <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+    <form method="post" enctype="multipart/form-data" action="{{ url_for('views.upload_data') }}" style="margin: 0;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
+    </form>
+    <a href="{{ url_for('views.export_csv') }}" class="btn">Экспорт в CSV</a>
+    <a href="{{ url_for('auth.add_employee') }}" class="btn">Добавить сотрудника</a>
+  </div>
   <table>
     <thead>
       <tr>
@@ -30,6 +33,7 @@
         <td>{{ emp.avg_correctness()|round(2) }}</td>
         <td>{{ emp.score() }}</td>
         <td>
+          <a href="{{ url_for('auth.add_task', emp_id=emp.id) }}" class="btn" style="background:#4CAF50;">Добавить задачу</a>
           <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
             <button type="submit" class="btn" style="background:#d9534f;">Удалить</button>
           </form>
