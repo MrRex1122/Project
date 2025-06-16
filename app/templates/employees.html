@@ -35,7 +35,8 @@
         <td>{{ emp.avg_correctness()|round(2) }}</td>
         <td>{{ emp.score() }}</td>
         <td>
-          {% if current_user.role in ['admin', 'manager'] or current_user.username == emp.name %}
+          {% if (current_user.role == 'worker' and current_user.username == emp.name)
+                or current_user.role in ['admin', 'manager'] %}
             <a href="{{ url_for('auth.add_task', emp_id=emp.id) }}" class="btn" style="background:#4CAF50;">Добавить задачу</a>
           {% endif %}
           {% if current_user.role == 'admin' %}

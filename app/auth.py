@@ -32,9 +32,6 @@ def logout():
 @bp.route('/employees', methods=['GET'])
 @login_required
 def list_employees():
-    if current_user.role not in ['admin', 'manager']:
-        flash("Доступ запрещен: требуется роль администратора или менеджера.", 'error')
-        return redirect(url_for('views.dashboard'))
     employees = Employee.query.all()
     return render_template('employees.html', employees=employees)
 

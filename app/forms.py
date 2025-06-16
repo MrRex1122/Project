@@ -10,7 +10,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
 
 class AddEmployeeForm(FlaskForm):
-    login = StringField('Логин (ID сотрудника)', validators=[DataRequired()])
     name = StringField('Имя', validators=[DataRequired()])
     role = SelectField('Роль', choices=[('worker', 'Работник'), ('manager', 'Менеджер'), ('admin', 'Администратор')], default='worker')
     submit = SubmitField('Добавить')
@@ -19,13 +18,6 @@ class AddTaskForm(FlaskForm):
     time = FloatField('Время выполнения (часы)', validators=[DataRequired(), NumberRange(min=0)])
     correctness = FloatField('Процент выполнения', validators=[DataRequired(), NumberRange(min=0, max=100)])
     submit = SubmitField('Добавить задачу')
-
-
-class AddEmployeeForm(FlaskForm):
-    login = StringField('Логин (ID сотрудника)', validators=[DataRequired()])
-    name = StringField('Имя', validators=[DataRequired()])
-    role = SelectField('Роль', choices=[('worker', 'Работник'), ('manager', 'Менеджер'), ('admin', 'Администратор')], default='worker')
-    submit = SubmitField('Добавить')
 
 
 class ChangePasswordForm(FlaskForm):

@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 from app import db
-from app.models import Employee, Task
+from app.models import User, Employee, Task
 bp = Blueprint('views', __name__)
 # Глобальная переменная для хранения текущих данных сотрудников
 current_employees = [] # список объектов Employee или словарей с данными
@@ -72,6 +72,8 @@ def export_csv():
         download_name='employees.csv'
     )
 
+
+
 @bp.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_data():
@@ -92,17 +94,22 @@ def upload_data():
             elif list(df.columns) == ['name', 'time', 'correctness']:
                 pass
             else:
-                # Если нет заголовков, читаем без них
                 df = pd.read_csv(file, header=None, names=['name', 'time', 'correctness'])
             # Очистить старые данные
             Task.query.delete()
             Employee.query.delete()
+            User.query.filter(User.role == 'worker').delete()  # удалить старых работников
             db.session.commit()
             # Группируем задачи по сотруднику
             for name, group in df.groupby('name'):
                 emp = Employee(name=name)
                 db.session.add(emp)
                 db.session.flush()  # чтобы получить emp.id
+                # Создать пользователя для входа (username = name)
+                if not User.query.filter_by(username=name).first():
+                    user = User(username=name, role='worker')
+                    user.set_password('password')
+                    db.session.add(user)
                 for _, row in group.iterrows():
                     task = Task(employee_id=emp.id, time=row['time'], correctness=row['correctness'])
                     db.session.add(task)
