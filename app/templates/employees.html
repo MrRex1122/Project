@@ -5,12 +5,16 @@
 {% block content %}
   <h1>Сотрудники</h1>
   <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
-    <form method="post" enctype="multipart/form-data" action="{{ url_for('views.upload_data') }}" style="margin: 0;">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="file" name="file" accept=".csv" required>
-        <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
-    </form>
-    <a href="{{ url_for('views.export_csv') }}" class="btn">Экспорт в CSV</a>
+    {% if current_user.role == 'admin' %}
+      <form method="post" enctype="multipart/form-data" action="{{ url_for('views.upload_data') }}" style="margin: 0;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="file" name="file" accept=".csv" required>
+          <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
+      </form>
+    {% endif %}
+    {% if current_user.role in ['admin', 'manager'] %}
+      <a href="{{ url_for('views.export_csv') }}" class="btn">Экспорт в CSV</a>
+    {% endif %}
     {% if current_user.role == 'admin' %}
       <a href="{{ url_for('auth.add_employee') }}" class="btn">Добавить сотрудника</a>
     {% endif %}
