@@ -11,7 +11,9 @@
         <button type="submit" class="btn" style="background:#2196F3;">Загрузить из CSV</button>
     </form>
     <a href="{{ url_for('views.export_csv') }}" class="btn">Экспорт в CSV</a>
-    <a href="{{ url_for('auth.add_employee') }}" class="btn">Добавить сотрудника</a>
+    {% if current_user.role == 'admin' %}
+      <a href="{{ url_for('auth.add_employee') }}" class="btn">Добавить сотрудника</a>
+    {% endif %}
   </div>
   <table>
     <thead>
@@ -33,10 +35,14 @@
         <td>{{ emp.avg_correctness()|round(2) }}</td>
         <td>{{ emp.score() }}</td>
         <td>
-          <a href="{{ url_for('auth.add_task', emp_id=emp.id) }}" class="btn" style="background:#4CAF50;">Добавить задачу</a>
-          <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
-            <button type="submit" class="btn" style="background:#d9534f;">Удалить</button>
-          </form>
+          {% if current_user.role in ['admin', 'manager'] or current_user.username == emp.name %}
+            <a href="{{ url_for('auth.add_task', emp_id=emp.id) }}" class="btn" style="background:#4CAF50;">Добавить задачу</a>
+          {% endif %}
+          {% if current_user.role == 'admin' %}
+            <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
+              <button type="submit" class="btn" style="background:#d9534f;">Удалить</button>
+            </form>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}

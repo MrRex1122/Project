@@ -4,10 +4,11 @@
   <h1>Добавить сотрудника</h1>
   <form method="post">
     {{ form.hidden_tag() }}
+    <div>{{ form.login.label }} {{ form.login(placeholder="ID сотрудника (логин для входа)") }}</div>
     <div>{{ form.name.label }} {{ form.name() }}</div>
-    <div>{{ form.position.label }} {{ form.position() }}</div>
-    <div>{{ form.department.label }} {{ form.department() }}</div>
-    <div>{{ form.rating.label }} {{ form.rating() }}</div>
+    <div>{{ form.role.label }} {{ form.role() }}</div>
     {{ form.submit(class="btn") }}
   </form>
+  <p style="color:gray;">Пароль по умолчанию: <b>password</b>. Рекомендуется сменить после входа.<br>
+  <b>Логин</b> — это ID сотрудника для входа.</p>
 {% endblock %}
