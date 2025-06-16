@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
-from app.forms import LoginForm, AddEmployeeForm, AddTaskForm, ChangePasswordForm
+from app.forms import LoginForm, AddEmployeeForm, AddTaskForm, ChangePasswordForm, DeleteEmployeeForm
 from app.models import User, Employee, Task
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -29,11 +29,14 @@ def logout():
     logout_user()
     return redirect(url_for('auth.login'))
 
+
+
 @bp.route('/employees', methods=['GET'])
 @login_required
 def list_employees():
     employees = Employee.query.all()
-    return render_template('employees.html', employees=employees)
+    delete_form = DeleteEmployeeForm()
+    return render_template('employees.html', employees=employees, delete_form=delete_form)
 
 @bp.route('/employees/add', methods=['GET', 'POST'])
 @login_required
@@ -48,8 +51,8 @@ def add_employee():
         )
         db.session.add(emp)
         db.session.commit()
-        # Создать пользователя для входа
-        user = User(username=form.login.data, role=form.role.data)
+        # Создать пользователя для входа (username = name)
+        user = User(username=form.name.data, role=form.role.data)
         user.set_password('password')  # пароль по умолчанию
         db.session.add(user)
         db.session.commit()

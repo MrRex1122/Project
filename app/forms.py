@@ -24,3 +24,6 @@ class ChangePasswordForm(FlaskForm):
     old_password = PasswordField('Старый пароль', validators=[DataRequired()])
     new_password = PasswordField('Новый пароль', validators=[DataRequired()])
     submit = SubmitField('Сменить пароль')
+
+class DeleteEmployeeForm(FlaskForm):
+    submit = SubmitField('Удалить')

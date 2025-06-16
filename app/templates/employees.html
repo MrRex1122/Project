@@ -41,6 +41,7 @@
           {% endif %}
           {% if current_user.role == 'admin' %}
             <form method="post" action="{{ url_for('auth.delete_employee', emp_id=emp.id) }}" style="display:inline;" onsubmit="return confirm('Удалить сотрудника {{ emp.name }}?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button type="submit" class="btn" style="background:#d9534f;">Удалить</button>
             </form>
           {% endif %}
