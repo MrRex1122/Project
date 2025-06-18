@@ -67,6 +67,10 @@ def delete_employee(emp_id):
         flash("Удаление разрешено только администратору.", 'error')
         return redirect(url_for('auth.list_employees'))
     emp = Employee.query.get_or_404(emp_id)
+    # Удаляем связанного пользователя
+    user = User.query.filter_by(username=emp.name).first()
+    if user:
+        db.session.delete(user)
     db.session.delete(emp)
     db.session.commit()
     flash(f"Сотрудник {emp.name} удалён.", 'info')
